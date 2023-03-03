@@ -8,8 +8,9 @@ Jobs must be run with the appropriate conda environment activated.
 
 chemprop_dir=chemprop  # indicate the location of the chemprop directory on your local computer
 results_dir=results  # indicate the location of the directory where you will be storing your trained models
-dataset_dir=data  # indicate the location of the qm9 splits data directory, provided with this github repo
+dataset_dir=data  # indicate the location of the splits data directory, provided with this github repo
 spk_dir=schnet  # indicate the location of the schnetpack directory
+qm9_path=qm9.db  # path to qm9.db as provided with this github repo. You will need to unzip it before use.
 
 # MPNN Enthalpy and Gap, norm and mean aggregation
 for i in 100 300 1000 3000 10000 30000 100000; do
@@ -64,8 +65,8 @@ for i in 100 300 1000 3000 10000 30000 100000; do
             for s in 0 1 2 3 4; do
                 mkdir $results_dir/save_schnet_${prop}_${agg}_${i}_${s}
                 cp $dataset_dir/split_${i}_${prop}.npz $results_dir/save_schnet_${prop}_${agg}_${i}_${s}/split.npz
-                python $spk_dir/spk_run.py train schnet custom $dataset_dir/qm9.db $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split_path $results_dir/save_schnet_${prop}_${agg}_${i}_${s}/split.npz --cuda --property ${prop} --aggregation_mode ${agg} --seed ${s}
-                python $spk_dir/spk_run.py eval $dataset_dir/qm9.db $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split test --cuda
+                python $spk_dir/spk_run.py train schnet custom $qm9_path $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split_path split.npz --cuda --property ${prop} --aggregation_mode ${agg} --seed ${s}
+                python $spk_dir/spk_run.py eval $qm9_path $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split test --cuda
 		python $spk_dir/spk_run.py pred $dataset_dir/qm9.db $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split test
             done
         done
