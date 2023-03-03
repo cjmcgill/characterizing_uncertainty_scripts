@@ -8,7 +8,7 @@
 
 chemprop_dir=chemprop  # indicate the location of the chemprop directory on your local computer
 results_dir=results  # indicate the location of the directory where you will be storing your trained models
-dataset_dir=data  # indicate the location of the splits data directory, provided with this github repo
+dataset_dir=data  # indicate the location of the splits data directory, provided with this github repo. You will need to unzip it before use.
 spk_dir=schnet  # indicate the location of the schnetpack directory
 qm9_path=qm9.db  # path to qm9.db as provided with this github repo. You will need to unzip it before use.
 
