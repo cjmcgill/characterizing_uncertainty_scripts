@@ -1,13 +1,13 @@
 #!/bin/bash 
 #SBATCH --array=0-104
 
-"""
-Script for generating the data needed for Figure 1. Some redundancy with the data needed for Fig 2, 4, and 7.
-Generating the entire data set can be very time intensive, so reducing the script to produce a subset may be more appropriate.
-Training and inference time are reduced significantly when using a gpu to train.
-Training is parallelizable across the individual jobs, shown here as jobs in a slurm job array.
-Jobs must be run with the appropriate conda environment for chemprop activated.
-"""
+# Script for generating the data needed for Figure 1. Some redundancy with the data needed for Fig 2, 4, and 7.
+# Generating the entire data set can be very time intensive, so reducing the script to produce a subset may be more appropriate.
+# Training and inference time are reduced significantly when using a gpu to train.
+# Training is parallelizable across the individual jobs, shown here as jobs in a slurm job array.
+# Jobs must be run with the appropriate conda environment for chemprop activated.
+
+
 
 chemprop_dir=chemprop  # indicate the location of the chemprop directory on your local computer
 results_dir=results  # indicate the location of the directory where you will be storing your trained models

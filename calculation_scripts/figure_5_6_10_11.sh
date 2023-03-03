@@ -1,10 +1,10 @@
-"""
-Script for generating the data needed for Figures 5, 6, 10, and 11.
-Generating the entire data set can be very time intensive, so reducing the script to produce a subset may be more appropriate.
-Training and inference time are reduced significantly when using a gpu to train.
-Training is parallelizable across the individual jobs.
-Jobs must be run with the appropriate conda environment activated.
-"""
+# Script for generating the data needed for Figures 5, 6, 10, and 11.
+# Generating the entire data set can be very time intensive, so reducing the script to produce a subset may be more appropriate.
+# Training and inference time are reduced significantly when using a gpu to train.
+# Training is parallelizable across the individual jobs.
+# Jobs must be run with the appropriate conda environment activated.
+
+
 
 chemprop_dir=chemprop  # indicate the location of the chemprop directory on your local computer
 results_dir=results  # indicate the location of the directory where you will be storing your trained models
