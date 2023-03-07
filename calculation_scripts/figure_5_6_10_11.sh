@@ -15,22 +15,30 @@ qm9_path=qm9.db  # path to qm9.db as provided with this github repo. You will ne
 # MPNN Enthalpy and Gap, norm and mean aggregation
 for i in 100 300 1000 3000 10000 30000 100000; do
     for agg in norm mean; do
-	for prop in enthalpy_H gap; do
-	    python $chemprop_dir/train.py \
-		   --data_path $dataset_dir/train_${i}.csv \
-		   --separate_test_path $dataset_dir/test.csv\
-		   --separate_val_path $dataset_dir/val_${i}.csv\
-		   --dataset_type regression \
-		   --num_workers 20 \
-		   --metric mae \
-		   --ensemble_size 5\
-		   --aggregation ${agg} \
-		   --target_columns ${prop}\
-		   --depth 4 \
-		   --ffn_num_layers 2 \
-		   --save_dir $results_dir/save_${prop}_${agg}_${i} \
-		   --epochs	200
-	done
+    for prop in enthalpy_H gap; do
+    for seed in 0 1 2 3 4; do
+        python $chemprop_dir/train.py \
+            --data_path $dataset_dir/train_${i}.csv \
+            --separate_test_path $dataset_dir/test.csv \
+            --separate_val_path $dataset_dir/val_${i}.csv \
+            --dataset_type regression \
+            --pytorch_seed $seed \
+            --num_workers 20 \
+            --metric mae \
+            --ensemble_size 5 \
+            --aggregation ${agg} \
+            --target_columns ${prop} \
+            --depth 4 \
+            --ffn_num_layers 2 \
+            --save_dir $results_dir/save_${prop}_${agg}_${i}_${seed} \
+            --epochs 200
+
+        python $chemprop_dir/predict.py \
+            --checkpoint_dir $results_dir/save_${prop}_${agg}_${i}_${seed} \
+            --test_path $dataset_dir/test.csv \
+            --preds_path $results_dir/save_${prop}_${agg}_${i}_${seed}/test_preds.csv
+    done
+    done
     done
 done
 
@@ -38,23 +46,31 @@ done
 for i in 100 300 1000 3000 10000 30000 100000; do
     for fp in 10 100 1000; do
         for prop in gap enthalpy_H; do
-            python $chemprop_dir/train.py \
-                   --data_path $dataset_dir/train_${i}.csv \
-                   --separate_test_path $dataset_dir/test.csv\
-                   --separate_val_path $dataset_dir/val_${i}.csv\
-                   --features_path $dataset_dir/train_fp${fp}_${i}.csv \
-                   --separate_test_features_path $dataset_dir/test_fp${fp}.csv\
-                   --separate_val_features_path $dataset_dir/val_fp${fp}_${i}.csv \
-                   --features_only\
-                   --dataset_type regression \
-                   --num_workers 20 \
-                   --metric mae \
-                   --ensemble_size 5\
-                   --target_columns ${prop}\
-                   --ffn_num_layers 2 \
-                   --save_dir $results_dir/save_${prop}_fp${fp}_${i} \
-                   --epochs     200
+            for seed in 0 1 2 3 4; do
+                python $chemprop_dir/train.py \
+                    --data_path $dataset_dir/train_${i}.csv \
+                    --separate_test_path $dataset_dir/test.csv \
+                    --separate_val_path $dataset_dir/val_${i}.csv \
+                    --features_path $dataset_dir/train_fp${fp}_${i}.csv \
+                    --separate_test_features_path $dataset_dir/test_fp${fp}.csv \
+                    --separate_val_features_path $dataset_dir/val_fp${fp}_${i}.csv \
+                    --features_only \
+                    --pytorch_seed $seed \
+                    --dataset_type regression \
+                    --num_workers 20 \
+                    --metric mae \
+                    --ensemble_size 5 \
+                    --target_columns ${prop} \
+                    --ffn_num_layers 2 \
+                    --save_dir $results_dir/save_${prop}_fp${fp}_${i}_${seed} \
+                    --epochs 200
+
+                python $chemprop_dir/predict.py \
+                    --checkpoint_dir $results_dir/save_${prop}_fp${fp}_${i}_${seed} \
+                    --test_path $dataset_dir/test.csv \
+                    --preds_path $results_dir/save_${prop}_fp${fp}_${i}_${seed}/test_preds.csv
             done
+        done
     done
 done
 
@@ -67,7 +83,7 @@ for i in 100 300 1000 3000 10000 30000 100000; do
                 cp $dataset_dir/split_${i}_${prop}.npz $results_dir/save_schnet_${prop}_${agg}_${i}_${s}/split.npz
                 python $spk_dir/spk_run.py train schnet custom $qm9_path $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split_path split.npz --cuda --property ${prop} --aggregation_mode ${agg} --seed ${s}
                 python $spk_dir/spk_run.py eval $qm9_path $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split test --cuda
-		python $spk_dir/spk_run.py pred $dataset_dir/qm9.db $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split test
+                python $spk_dir/spk_run.py pred $dataset_dir/qm9.db $results_dir/save_schnet_${prop}_${agg}_${i}_${s} --split test
             done
         done
     done
@@ -76,52 +92,63 @@ done
 #MPNN on different molecular sizes
 for i in 100 300 1000 3000 10000 30000 100000; do
     for agg in norm mean; do
-	python $chemprop_dir/train.py \
+    for seed in 0 1 2 3 4; do
+    python $chemprop_dir/train.py \
             --data_path $dataset_dir/train_agg_size${i}.csv \
-            --separate_test_path $dataset_dir/test_agg_size_small.csv\
-            --separate_val_path $dataset_dir/val_agg_size${i}.csv\
+            --separate_test_path $dataset_dir/test_agg_size_small.csv \
+            --separate_val_path $dataset_dir/val_agg_size${i}.csv \
             --dataset_type regression \
             --num_workers 20 \
+            --pytorch_seed $seed \
             --metric mae \
-            --ensemble_size 5\
+            --ensemble_size 5 \
             --aggregation ${agg} \
-            --target_columns enthalpy_H\
+            --target_columns enthalpy_H \
             --depth 4 \
             --ffn_num_layers 2 \
-            --save_dir $results_dir/save_agg_${agg}_size_${i} \
-            --epochs     200
+            --save_dir $results_dir/save_agg_${agg}_size_${i}_${seed} \
+            --epochs 200
 
     python $chemprop_dir/predict.py \
-           --checkpoint_dir $results_dir/save_agg_${agg}_size_${i} \
-           --test_path $dataset_dir/test_agg_size_small.csv\
-           --preds_path $results_dir/save_agg_${agg}_size_${i}/preds_small.csv
+            --checkpoint_dir $results_dir/save_agg_${agg}_size_${i}_${seed} \
+            --test_path $dataset_dir/test_agg_size_small.csv \
+            --preds_path $results_dir/save_agg_${agg}_size_${i}_${seed}/preds_small.csv
     
     python $chemprop_dir/predict.py \
-           --checkpoint_dir $results_dir/save_agg_${agg}_size_${i} \
-           --test_path $dataset_dir/test_agg_size_large.csv\
-           --preds_path $results_dir/save_agg_${agg}_size_${i}/preds_large.csv
+            --checkpoint_dir $results_dir/save_agg_${agg}_size_${i}_${seed} \
+            --test_path $dataset_dir/test_agg_size_large.csv \
+            --preds_path $results_dir/save_agg_${agg}_size_${i}_${seed}/preds_large.csv
+    done
     done
 done
 
 # MPNN on U at different temperatures
-for i in 100 300 1000 3000 10000 30000 100000; do
-    for s in correct random; do
-            python $chemprop_dir/train.py \
-                   --data_path $dataset_dir/u_${s}_train_${i}.csv \
-                   --separate_test_path $dataset_dir/u_${s}_test.csv\
-                   --separate_val_path $dataset_dir/u_${s}_val_${i}.csv\
-                   --features_path $dataset_dir/u_${s}_train_features_${i}.csv \
-                   --separate_test_features_path $dataset_dir/u_${s}_test_features.csv\
-                   --separate_val_features_path $dataset_dir/u_${s}_val_features_${i}.csv \
-                   --dataset_type regression \
-                   --num_workers 20 \
-                   --metric mae \
-                   --ensemble_size 5\
-                   --aggregation norm\
-                   --target_columns u_atom\
-                   --depth 4\
-                   --ffn_num_layers 2 \
-                   --save_dir $results_dir/save_u_${s}_${i} \
-                   --epochs     200
+i = 100000
+for s in correct random; do
+    for seed in 0 1 2 3 4; do
+        python $chemprop_dir/train.py \
+            --data_path $dataset_dir/u_${s}_train_${i}.csv \
+            --separate_test_path $dataset_dir/u_${s}_test.csv \
+            --separate_val_path $dataset_dir/u_${s}_val_${i}.csv \
+            --features_path $dataset_dir/u_${s}_train_features_${i}.csv \
+            --separate_test_features_path $dataset_dir/u_${s}_test_features.csv \
+            --separate_val_features_path $dataset_dir/u_${s}_val_features_${i}.csv \
+            --dataset_type regression \
+            --num_workers 20 \
+            --pytorch_seed $seed \
+            --metric mae \
+            --ensemble_size 5 \
+            --aggregation norm \
+            --target_columns u_atom \
+            --depth 4 \
+            --ffn_num_layers 2 \
+            --save_dir $results_dir/save_u_${s}_${i}_${seed} \
+            --epochs 200
+
+        python $chemprop_dir/predict.py \
+            --checkpoint_dir $results_dir/save_u_${s}_${i}_${seed} \
+            --test_path $dataset_dir/test.csv \
+            --preds_path $results_dir/save_u_${s}_${i}_${seed}/test_preds.csv
     done
 done
+
