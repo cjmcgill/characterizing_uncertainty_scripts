@@ -25,7 +25,6 @@ for i in 100 300 1000 3000 10000 30000 100000; do
             --pytorch_seed $seed \
             --num_workers 20 \
             --metric mae \
-            --ensemble_size 5 \
             --aggregation ${agg} \
             --target_columns ${prop} \
             --depth 4 \
@@ -59,7 +58,6 @@ for i in 100 300 1000 3000 10000 30000 100000; do
                     --dataset_type regression \
                     --num_workers 20 \
                     --metric mae \
-                    --ensemble_size 5 \
                     --target_columns ${prop} \
                     --ffn_num_layers 2 \
                     --save_dir $results_dir/save_${prop}_fp${fp}_${i}_${seed} \
@@ -101,7 +99,6 @@ for i in 100 300 1000 3000 10000 30000 100000; do
             --num_workers 20 \
             --pytorch_seed $seed \
             --metric mae \
-            --ensemble_size 5 \
             --aggregation ${agg} \
             --target_columns enthalpy_H \
             --depth 4 \
@@ -137,7 +134,6 @@ for s in correct random; do
             --num_workers 20 \
             --pytorch_seed $seed \
             --metric mae \
-            --ensemble_size 5 \
             --aggregation norm \
             --target_columns u_atom \
             --depth 4 \
