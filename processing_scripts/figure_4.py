@@ -27,6 +27,7 @@ header = [
     '4_mae',
     '5_mae',
     'nonvariance_mae',
+    'fraction_nonvariance',
 ]
 
 
@@ -71,7 +72,8 @@ def get_stats(dir_path,target_path):
             model_maes.append(model_mae)
         else:
             model_maes.append('')
-    stats=[ens_mae,ens_rmse,*model_maes,nonvariance_mae]
+    fraction_nonvariance = nonvariance_mae / np.mean(model_maes)
+    stats=[ens_mae,ens_rmse,*model_maes,nonvariance_mae,fraction_nonvariance]
     return stats
 
 
