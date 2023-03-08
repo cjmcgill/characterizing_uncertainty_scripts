@@ -88,6 +88,23 @@ for data_size in [100,300,1000,3000,10000,30000,100000]:
         data_models.append("mpnn")
         data_prop.append(prop)
 
+        # mpnn with custom descriptors
+        for features in ["CN","CNO"]:
+            preds_paths = []
+            for seed in [0,1,2,3,4]:
+                preds_path = os.path.join(
+                    results_dir,
+                    f"save_{prop}_norm_{features}_{data_size}_{seed}",
+                    "test_preds.csv",
+                )
+                preds_paths.append(preds_path)
+            mae, rmse = chemprop_stats(preds_paths,prop)
+            data_sizes.append(data_size)
+            data_maes.append(mae)
+            data_rmses.append(rmse)
+            data_models.append(f"mpnn_{features}")
+            data_prop.append(prop)
+
         # fp
         for fp in [10,100,1000]:
             preds_paths = []
