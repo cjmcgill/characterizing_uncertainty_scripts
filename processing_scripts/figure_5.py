@@ -109,7 +109,7 @@ for data_size in [100,300,1000,3000,10000,30000,100000]:
             data_maes.append(mae)
             data_rmses.append(rmse)
             data_aggregations.append(agg)
-            data_models.append("schet")
+            data_models.append("schnet")
             data_prop.append(prop)
 
 write_path = os.path.join(figures_dir,"fig5.csv")
