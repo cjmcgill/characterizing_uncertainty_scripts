@@ -11,6 +11,7 @@ results_dir=results  # indicate the location of the directory where you will be 
 dataset_dir=data  # indicate the location of the splits data directory, provided with this github repo. You will need to unzip it before use.
 spk_dir=schnet  # indicate the location of the schnetpack directory
 qm9_path=qm9.db  # path to qm9.db as provided with this github repo. You will need to unzip it before use.
+custom_descriptors_dir=custom_descriptors  # path to the custom_descriptors directory, included with this gihub repo. You will need to unzip it before use.
 
 # MPNN Enthalpy and Gap, norm and mean aggregation
 for i in 100 300 1000 3000 10000 30000 100000; do
@@ -148,3 +149,70 @@ for s in correct random; do
     done
 done
 
+# MPNN Enthalpy and Gap, norm and mean aggregationwit C=N or C=N=O
+agg=mean
+prop=enthalpy_H
+for i in 100 300 1000 3000 10000 30000 100000; do
+    for t in CN CNO; do
+        for seed in 0 1 2 3 4; do
+            chemprop_train \
+                --data_path $dataset_dir/train_${i}.csv \
+                --separate_test_path $dataset_dir/test.csv \
+                --separate_val_path $dataset_dir/val_${i}.csv \
+                --dataset_type regression \
+                --num_workers 20 \
+                --metric mae \
+                --aggregation ${agg} \
+                --target_columns ${prop}\
+                --depth 4 \
+                --ffn_num_layers 2 \
+                --save_dir $results_dir/save_${prop}_${agg}_${t}_${i}_${seed} \
+                --epochs 200 \
+                --atom_descriptors_path $custom_descriptors_dir/custom_descriptors_${t}_train_${i}.npz \
+                --separate_val_atom_descriptors_path $custom_descriptors_dir/custom_descriptors_${t}_val_${i}.npz \
+                --separate_test_atom_descriptors_path $custom_descriptors_dir/custom_descriptors_${t}_test.npz \
+                --atom_descriptors feature \
+                --overwrite_default_atom_features \
+                --no_atom_descriptor_scaling 
+
+            python $chemprop_dir/predict.py \
+                --checkpoint_dir $results_dir/save_${prop}_${agg}_${t}_${i}_${seed} \
+                --test_path $dataset_dir/test.csv \
+                --preds_path $results_dir/save_${prop}_${agg}_${t}_${i}_${seed}/test_preds.csv
+        done
+    done
+done
+
+
+agg=norm
+prop=gap
+for i in 100 300 1000 3000 10000 30000 100000; do
+    for t in CN CNO; do
+        for seed in 0 1 2 3 4; do
+            chemprop_train \
+                --data_path $dataset_dir/train_${i}.csv \
+                --separate_test_path $dataset_dir/test.csv \
+                --separate_val_path $dataset_dir/val_${i}.csv \
+                --dataset_type regression \
+                --num_workers 20 \
+                --metric mae \
+                --aggregation ${agg} \
+                --target_columns ${prop}\
+                --depth 4 \
+                --ffn_num_layers 2 \
+                --save_dir $results_dir/save_${prop}_${agg}_${t}_${i}_${seed} \
+                --epochs 200 \
+                --atom_descriptors_path $custom_descriptors_dir/custom_descriptors_${t}_train_${i}.npz \
+                --separate_val_atom_descriptors_path $custom_descriptors_dir/custom_descriptors_${t}_val_${i}.npz \
+                --separate_test_atom_descriptors_path $custom_descriptors_dir/custom_descriptors_${t}_test.npz \
+                --atom_descriptors feature \
+                --overwrite_default_atom_features \
+                --no_atom_descriptor_scaling 
+
+            python $chemprop_dir/predict.py \
+                --checkpoint_dir $results_dir/save_${prop}_${agg}_${t}_${i}_${seed} \
+                --test_path $dataset_dir/test.csv \
+                --preds_path $results_dir/save_${prop}_${agg}_${t}_${i}_${seed}/test_preds.csv
+        done
+    done
+done
