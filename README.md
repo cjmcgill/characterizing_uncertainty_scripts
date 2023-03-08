@@ -5,7 +5,7 @@ Scripts associated with the paper "Characterizing Uncertainty in Machine Learnin
 
 Portions of the scripts and calculations are dependent on three other repositories.
 
-* Chemprop. A software for using machine learning for chemical property prediction, using a Message Passing Neural Network model structure based on a 2-D graph representation of the molecule.
+* Chemprop. A software for using machine learning for chemical property prediction, using a Message Passing Neural Network model structure based on a 2-D graph representation of the molecule. The chemprop conda environment is necessary for most calculations carried out using scripts in this repository.
 https://github.com/chemprop/chemprop
 
 * Ensemble Projection. An software for using Bayesian inference to calculate what portion of a model's error is due to variance error and projecting an expected error level for other ensemble sizes.
@@ -20,6 +20,21 @@ Two datasets are used in training models for the associated paper.
 * Artificial Dataset of Molecular Enthalpies of Formation. A noise-free artificial dataset constructed for the study of model uncertainty (https://doi.org/10.5281/zenodo.7626488). The zenodo repository contains scripts for recreating the splits used in this study and adding noise to the dataset in the prescribed way.
 
 * QM9. A DFT dataset comprising 134k small molecules constructed using the atoms C, H, O, N, F. (https://moleculenet.org/datasets-1). The QM9 targets, formatted as are used by the scripts for the paper, are provided in the data directory of this repository.
+
+
+This repository contains the following scripts and directories that are necessary for making calculations and generating figures associated with this paper. For the method behind a particular figure, you can look at the associated script in the three scripts directories.
+
+* calculation_scripts. A directory containing scripts for training the models and making predictions that are part of this paper. Scripts are highly parallelizable and this is recommended because of the large amount of computing time necessary to carry out all of the calculations.
+
+* processing_scripts. A directory containing scripts that perform intermediate processing of the results.
+
+* figure_scripts. A directory containing scripts that perform final processing of results and generate the figures used in the paper.
+
+* data.zip. A compressed directory containing specific data splits used in some model training.
+
+* custom_descriptors.zip. A compressed directory containing custom atomic descriptors used for training the models associated with Figure 6 that used altered descriptors in message passing.
+
+* qm9.zip. A compressed file that, after being extracted, is needed for training schnet on the qm9 dataset.
 
 
 Here are brief descriptions of the eleven figures presented in the paper.
